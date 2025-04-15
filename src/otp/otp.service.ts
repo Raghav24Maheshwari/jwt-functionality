@@ -15,7 +15,7 @@ export class OtpService {
   async generateOtp(userId: number,email:string,username:string) {
     const otp = otpGenerator();
     const timestamp = Date.now();
-    const otpData = this.userOtpRepository.create({
+    const otpData = this.userOtpRepository.gener({
       userId,
       otp,
       email,
