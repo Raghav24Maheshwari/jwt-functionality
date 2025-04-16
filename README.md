@@ -38,6 +38,7 @@ cd nestjs-otp-app
 ```bash
 npm install
 ```
+<!-- To regiser user bu seeder as an admin -->   -->> npm run seed:admin
 
 # Setup environment variables
 ```bash

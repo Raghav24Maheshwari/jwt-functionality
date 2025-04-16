@@ -1,7 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 
-@Entity('otp')
+@Entity('otps')
 export class userOtp {
   @PrimaryGeneratedColumn()
   id: number;
@@ -12,10 +20,14 @@ export class userOtp {
   @Column()
   userId: number;
 
-  @OneToOne(() => User)
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.otps)
+  @JoinColumn({ name: 'userId' }) 
   user: User;
 
-  @Column('bigint')
-  timestamp: number;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
+

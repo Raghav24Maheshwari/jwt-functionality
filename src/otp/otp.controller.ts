@@ -23,7 +23,7 @@ export class OtpController {
     }
        console.log(body.userId,"from")
     const result = await this.otpService.generateOtp(body.userId,body.email,body.username);
-    return res.status(result.statusCode).json(result);
+    return result
   }
   
   @Post('_verify')

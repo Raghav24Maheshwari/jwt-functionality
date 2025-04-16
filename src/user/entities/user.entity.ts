@@ -1,26 +1,30 @@
-import { IsEmail, IsEnum } from 'class-validator';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 
-export enum Role {
-    USER = 'user',
-    ADMIN = 'admin',
-  }
-  
-
-@Entity('user')
+import { userOtp } from '../../otp/entities/otp.entity';
+import { Role } from '../../common/enum';
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
   @Column()
-  @IsEmail()
+  userName: string;
+
+  @Column({ unique: true })
   email: string;
 
   @Column()
-  username: string;
-
-  @Column()
   password: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
+  role: Role;
 
   @Column({ default: false })
   isActive: boolean;
@@ -28,14 +32,12 @@ export class User {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @Column({
-    type: 'enum',
-    enum: Role,
-    default: Role.USER,
-  })
-  @IsEnum(Role)
-  role: Role;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @Column('bigint')
-  timestamp: number;
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => userOtp, (userOtp) => userOtp.user)
+  otps: userOtp[];
 }

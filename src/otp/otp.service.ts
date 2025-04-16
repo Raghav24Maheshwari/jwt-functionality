@@ -15,14 +15,12 @@ export class OtpService {
   async generateOtp(userId: number,email:string,username:string) {
     const otp = otpGenerator();
     const timestamp = Date.now();
-    const otpData = this.userOtpRepository.gener({
-      userId,
-      otp,
-      email,
-      username,
-      timestamp,
-    });
-    await this.userOtpRepository.save(otpData);
+    // const otpData = this.userOtpRepository.create({
+    //   otp,
+    //   userId,
+    //   timestamp,
+    // });
+    // await this.userOtpRepository.save(otpData);
     await otpSend(email,otp)
     return {
       statusCode: HttpStatus.CREATED,
@@ -41,7 +39,8 @@ export class OtpService {
     }
 
     const currentTime = Date.now();
-    const timeDiff = currentTime - userEntry.timestamp;
+    const timeDiff = currentTime - 567894769354;
+    // const timeDiff = currentTime - userEntry.timestamp;
 
     if (timeDiff > OTP_EXPIRY_TIME) {
       return { statusCode: HttpStatus.GONE, message: 'OTP Expired' }; 
