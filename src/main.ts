@@ -6,8 +6,8 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('OTP')
-    .setDescription('This project is about to generate otp and verify otp')
+    .setTitle('USER MANAGEMENT')
+    .setDescription('This project is for user management')
     .setVersion('1.0')
     .addBearerAuth()
     // .addTag('otp')

@@ -10,7 +10,7 @@ import { JwtStrategy } from './stratagey/jwt.strategy';
   imports: [
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: '1d' },
     }),
     TypeOrmModule.forFeature([User])],
   controllers: [AuthController],
