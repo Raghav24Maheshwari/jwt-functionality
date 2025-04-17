@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('OTP')
     .setDescription('This project is about to generate otp and verify otp')
     .setVersion('1.0')
+    .addBearerAuth()
     // .addTag('otp')
     .build();
 

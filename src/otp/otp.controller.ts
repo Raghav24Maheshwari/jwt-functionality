@@ -1,29 +1,24 @@
-import { Controller , Body ,Post, HttpStatus,Res} from "@nestjs/common";
+import { Controller , Body ,Post, HttpStatus,Res, UseGuards, Request} from "@nestjs/common";
 import { Response } from 'express';
 import { OtpService } from "./otp.service";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { CreateOtpDto } from "./dto/create-otp.dto";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { verifyOtpDto } from "./dto/verify-otp.dto";
 import { OTP_MESSAGES } from "src/utils/constants";
+import { JwtAuthGuard } from "src/auth/guards/jwt.guard";
 
 @ApiTags('OTP')
+@ApiBearerAuth()
 @Controller('otp')
+@UseGuards(JwtAuthGuard)
 export class OtpController {
   constructor(private readonly otpService: OtpService) {}
 
   @Post()
   @ApiOperation({ summary: OTP_MESSAGES.OTP_CREATE_SUMMARY })
   @ApiResponse({ status: 201, description: OTP_MESSAGES.OTP_GENERATED_SUCCESS })
-  @ApiResponse({ status: 400, description: OTP_MESSAGES.USER_ID_REQUIRED })
-  @ApiResponse({ status: 409, description: OTP_MESSAGES.USER_ID_EXISTS })
-  @ApiBody({ type: CreateOtpDto }) 
-  async generateOtp(@Body() body: CreateOtpDto, @Res() res: Response) {
-    if (!body || !body.userId) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'User ID is required' });
-    }
-       console.log(body.userId,"from")
-    const result = await this.otpService.generateOtp(body.userId,body.email,body.username);
-    return result
+  @ApiBody({ schema: { properties: { email: { type: 'string' } } } })
+  generateOtp(@Request() req) {
+    return this.otpService.generateOtp(req.user);
   }
   
   @Post('_verify')

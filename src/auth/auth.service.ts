@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
@@ -6,6 +6,9 @@ import { SignupDto } from "./dto/signup.dto";
 import * as bcrypt from "bcrypt";
 import { LoginDto } from "./dto/login.dto";
 import { JwtService } from "@nestjs/jwt";
+import { notifyEmail, welcomeEmail } from "src/utils/helper";
+import { Role } from "src/common/enum";
+import { NOTFOUND } from "dns";
 
 @Injectable()
 export class AuthService {
@@ -20,12 +23,15 @@ export class AuthService {
     if (exists) throw new ConflictException('Email already in use');
 
     const hash = await bcrypt.hash(dto.password, 10);
-
+    const admin = await this.userRepo.findOne({where :{role:Role.ADMIN}})
+    if (!admin || !admin.email) throw new Error('Admin not found or missing email');
     const user = this.userRepo.create({
       ...dto,
       password: hash,
     });
     await this.userRepo.save(user);
+    await welcomeEmail(user.email,user.userName);
+    await notifyEmail(admin?.email,user.email,user.userName,user.userId,user.role);
 
     return {
       message: 'User created successfully',
@@ -47,7 +53,9 @@ export class AuthService {
     if (!user.isActive) {
       throw new BadRequestException('user not activated contact to admin');
     }
-
+    if (user.isDeleted) {
+      throw new NotFoundException('user is deleted contact to admin');
+    }
 
     const payload = { sub: user.userId, role: user.role };
     const token = this.jwtService.sign(payload);

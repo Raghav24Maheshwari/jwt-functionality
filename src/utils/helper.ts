@@ -35,3 +35,48 @@ export const otpSend = async (email: string, otp: string) => {
     return false;
   }
 };
+
+export const welcomeEmail = async (email: string,name: string) => {
+  const templatePath = "src/templates/welcomeEmail.html";
+  let htmlContent = fs.readFileSync(templatePath, 'utf8');
+  htmlContent = htmlContent.replace('{{name}}', name);
+  const msg = {
+    to: email,
+    from: fromEmail,
+    subject: `Welcome  ${name}`,
+    text: 'You are on a good platform',
+    html: htmlContent,
+  };
+
+  try {
+    await sgMail.send(msg);
+    return true;
+  } catch (error) {
+    console.log('SendGrid Error:', error);
+    return false;
+  }
+};
+
+export const notifyEmail = async (adminEmail:string,email: string,name: string,userId:number,role:string) => {
+  const templatePath = "src/templates/notifyEmail.html";
+  let htmlContent = fs.readFileSync(templatePath, 'utf8');
+  htmlContent = htmlContent.replace('{{name}}', name);
+  htmlContent = htmlContent.replace('{{userId}}', userId);
+  htmlContent = htmlContent.replace('{{role}}', role);
+  htmlContent = htmlContent.replace('{{email}}', email);
+  const msg = {
+    to: adminEmail,
+    from: fromEmail,
+    subject: `Notification about a new ${name}`,
+    text: 'This user is registerd',
+    html: htmlContent,
+  };
+
+  try {
+    await sgMail.send(msg);
+    return true;
+  } catch (error) {
+    console.log('SendGrid Error:', error);
+    return false;
+  }
+};
